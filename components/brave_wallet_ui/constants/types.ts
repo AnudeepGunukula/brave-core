@@ -155,7 +155,7 @@ export interface WalletState {
   isWalletBackedUp: boolean
   hasIncorrectPassword: boolean
   selectedAccount: WalletAccountType
-  selectedNetwork: Network
+  selectedNetwork: EthereumChain
   accounts: WalletAccountType[]
   transactions: RPCTransactionType[]
   userVisibleTokens: string[]
@@ -164,6 +164,7 @@ export interface WalletState {
   portfolioPriceHistory: PriceDataObjectType[]
   isFetchingPortfolioPriceHistory: boolean
   selectedPortfolioTimeline: AssetPriceTimeframe
+  networkList: EthereumChain[]
 }
 
 export interface PanelState {
@@ -176,7 +177,7 @@ export interface PanelState {
   connectingAccounts: string[]
   showSignTransaction: boolean
   showAllowSpendERC20Token: boolean
-  networkPayload: string
+  networkPayload: EthereumChain
 }
 
 export interface PageState {
@@ -233,16 +234,6 @@ export enum AssetPriceTimeframe {
   All = 6
 }
 
-export enum Network {
-  Mainnet = 0,
-  Rinkeby = 1,
-  Ropsten = 2,
-  Goerli = 3,
-  Kovan = 4,
-  Localhost = 5,
-  Custom = 6
-}
-
 export interface SwapParams {
   takerAddress: string
   sellAmount: string
@@ -281,7 +272,7 @@ export interface SwapResponseReturnInfo {
 }
 
 export interface GetNetworkReturnInfo {
-  network: Network
+  network: EthereumChain
 }
 
 export interface GetBlockTrackerUrlReturnInfo {
@@ -386,7 +377,8 @@ export interface ERCTokenRegistry {
 
 export interface EthJsonRpcController {
   getNetwork: () => Promise<GetNetworkReturnInfo>
-  setNetwork: (netowrk: Network) => Promise<void>
+  setNetwork: (netowrk: string) => Promise<void>
+  getAllNetworks: () => Promise<GetAllNetworksList>
   getChainId: () => Promise<GetChainIdReturnInfo>
   getBlockTrackerUrl: () => Promise<GetBlockTrackerUrlReturnInfo>
   getBalance: (address: string) => Promise<GetBalanceReturnInfo>
@@ -411,10 +403,6 @@ export interface KeyringController {
   addAccount: (accountName: string) => Promise<AddAccountReturnInfo>
 }
 
-export interface EthJsonRpcController {
-  getChainId: () => Promise<GetChainIdReturnInfo>
-}
-
 export interface RecoveryObject {
   value: string,
   id: number
@@ -422,12 +410,6 @@ export interface RecoveryObject {
 
 export interface MojoTime {
   microseconds: number
-}
-
-export interface NetworkOptionsType {
-  name: string
-  id: number
-  abbr: string
 }
 
 export type BuySendSwapViewTypes =
@@ -485,14 +467,21 @@ export type AllowSpendReturnPayload = {
   transactionFeeFiat: string
 }
 
-export type ChainInformation = {
-  chainId: string,
+export type NativeCurrency = {
+  symbol: string,
   name: string,
-  url: string
+  decimals: number
 }
 
-export type AddNetworkReturnPayload = {
-  siteUrl: string,
-  contractAddress: string,
-  chainInfo: ChainInformation
+export type EthereumChain = {
+  chainId: string,
+  chainName?: string,
+  blockExplorerUrls?: string[],
+  iconUrls?: string[],
+  rpcUrls?: string[],
+  currency?: NativeCurrency
+}
+
+export interface GetAllNetworksList {
+  networks: EthereumChain[]
 }
